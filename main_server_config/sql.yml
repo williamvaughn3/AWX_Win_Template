@@ -1,0 +1,9 @@
+- hosts: win_sql
+
+  tasks:
+    - import_tasks: 'playbook_import/run_commands.yml'
+    #- import_tasks: 'playbook_import/add_users.yml'
+    
+  roles:
+    - sql
+    

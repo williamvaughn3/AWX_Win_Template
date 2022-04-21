@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  ansible_user: root
+  roles:
+    - windows-10

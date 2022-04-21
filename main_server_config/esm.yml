@@ -1,0 +1,14 @@
+- hosts: win_esm
+
+  tasks:
+    - import_tasks: 'playbook_import/run_commands.yml'
+    - import_tasks: 'playbook_import/setup_rdp.yml'
+    - import_tasks: 'playbook_import/test_choco.yaml'
+    - import_tasks: 'playbook_import/add_users.yml'
+    
+  roles:
+    - roles/windows_server
+    - roles/dotnet_35_framework_core
+    - roles/netfx3
+    - roles/dotnet_48_framework_runtime
+    

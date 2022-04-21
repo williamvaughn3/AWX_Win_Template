@@ -1,0 +1,23 @@
+ansible_user: instructor
+ansible_password: "password1234567"
+
+windows_root: 'C:\Windows\System32\'
+
+domain_administrator: domain_admin
+domain_password: domain_password
+
+domain_zone: ".com"
+domain_name: "warrantz"
+dns: "192.168.1.250"
+public_dns: "10.50.255.254"
+dc_ip: "{{ dns }}"
+
+ntpserver: time.nist.gov"
+timezone: "Eastern Standard Time"
+winrm_script: "C:\\Windows\\System32\\winrmsetup.ps1"
+winrm_service_name: "winrm-keep-alive"
+
+ansible_port: 5986
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
+

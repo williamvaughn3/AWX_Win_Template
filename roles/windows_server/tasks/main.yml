@@ -1,0 +1,62 @@
+---
+# Tasks to perform initial config of Windows 10
+
+###############################################################################
+# SYS CONFIG ##################################################################
+###############################################################################
+
+# https://docs.ansible.com/ansible/latest/modules/win_timezone_module.html
+- name: Set timezone to "{{ timezone }}"
+  win_timezone:
+    timezone: "{{ timezone }}"
+
+# https://docs.ansible.com/ansible/latest/modules/win_dns_client_module.html#win-dns-client-module
+- name: Set nameservers to {{ dns }}
+  win_dns_client:
+    adapter_names: '*' # all interfaces
+    ipv4_addresses:
+      - "{{ dns }}"
+      - "10.50.255.254"
+
+# https://docs.ansible.com/ansible/latest/modules/win_service_module.html
+- name: Ensure WinRM starts when the system has settled (added reliability)
+  win_service:
+    name: WinRM
+    start_mode: delayed
+
+# https://docs.ansible.com/ansible/latest/modules/win_domain_membership_module.html
+- name: "Join {{ domain_name }}.{{ domain_zone }} domain (DC: {{ ad_dc_ip }})"
+  win_domain_membership:
+    dns_domain_name: "{{ domain_name }}.{{ domain_zone }}"
+    domain_admin_user: "{{ domain_admin }}@{{ domain_name }}.{{ domain_zone }}"
+    domain_admin_password: "{{ domain_password }}"
+    state: domain
+  register: domain_state
+
+# https://docs.ansible.com/ansible/latest/modules/win_firewall_module.html
+- name: Enable firewall for Domain, Public and Private profiles
+  win_firewall:
+    state: enabled
+    profiles:
+    - Domain
+    - Private
+    - Public
+
+# https://docs.ansible.com/ansible/latest/modules/win_reboot_module.html
+- name: Reboot if required
+  win_reboot:
+  when: domain_state and domain_state.reboot_required
+
+###############################################################################
+# LOCAL USERS #################################################################
+###############################################################################
+
+# https://docs.ansible.com/ansible/latest/modules/win_user_module.html
+- name: Create Admin User (Administrator | "{{ domain_password }}")
+  win_user:
+    name: Administrator
+    password: "{{ domain_password }}"
+    state: present
+    groups:
+      - Administrators
+
